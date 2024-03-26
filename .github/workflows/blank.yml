@@ -15,22 +15,24 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Trigger notebook in staging
+        uses: databricks/run-notebook@v0
+        with:
+          databricks-host: https://adb-3173621422744913.13.azuredatabricks.net
+          databricks-token: dapic253170822dc0bcf7117b318e0427f90-2
+          local-notebook-path: main.py
+          # The cluster JSON below is for AWS workspaces. On Azure and GCP, set
+          # node_type_id to an appropriate node type, e.g. "Standard_D3_v2" for
+          # Azure or "n1-highmem-4" for GCP
+          new-cluster-json: >
+            {
+              "num_workers": 1,
+              "spark_version": "13.3.x-scala2.12",
+              "node_type_id": "Standard_D4ads_v5"
+            }
